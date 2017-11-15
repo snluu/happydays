@@ -1,0 +1,13 @@
+### Building the project
+
+1. Install the native build node-gyp build tools. Instructions can be found here:
+https://github.com/nodejs/node-gyp#installation
+On Windows, run this command from an elevated (admin) prompt:
+npm install --global --production windows-build-tools --add-python-to-path
+
+2. Run `npm install`
+
+
+### Packaging
+
+Run `npm run package-win64` or something like that.

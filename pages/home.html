@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Home Page</title>
+  </head>
+  <body>
+    <h1>Welcome!</h1>
+    <h2 id="subtitle"></h2>
+    <div>
+      Checklist:
+      <ul>
+        <li>Update package.json</li>
+        <li>Update .npmrc to your desired Electron version</li>
+      </ul>
+    </div>
+
+    <script>
+      let helloNative = require('hellofromcpp');
+      let h2 = document.querySelector('#subtitle');
+      h2.innerHTML = helloNative.hello();
+    </script>
+  </body>
+</html>
