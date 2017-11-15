@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "package-mac64": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=packaged",
-    "package-win64": "electron-packager . electron-with-native-template --overwrite --asar=true --platform=win32 --arch=x64 --icon=assets/icons/win/icon.ico --prune=true --out=packaged --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Election with Native Template\"",    
+    "package-win64": "electron-packager . electron-with-native-template --overwrite --asar=true --platform=win32 --arch=x64 --icon=assets/icons/win/icon.ico --prune=true --out=packaged --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Election with Native Template\"",
     "package-linux64": "electron-packager . electron-with-native-template --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=packaged"
   },
   "repository": {

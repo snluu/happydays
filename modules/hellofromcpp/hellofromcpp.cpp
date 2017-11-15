@@ -14,7 +14,7 @@ using namespace std;
 
 void hello(const FunctionCallbackInfo<Value>& args) {
   char message[100];
-  sprintf(message, "Hello from CPP! It is now %I64d", time(nullptr));
+  sprintf(message, "Hello from C++! time() = %I64d", time(nullptr));
 
   Isolate* isolate = args.GetIsolate();
   args.GetReturnValue().Set(String::NewFromUtf8(

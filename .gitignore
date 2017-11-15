@@ -136,5 +136,5 @@ $RECYCLE.BIN/
 # End of https://www.gitignore.io/api/node,macos,linux,windows,visualstudiocode
 
 packaged/
-modules/*/build/Debug/
-modules/*/build/Release/
+modules/*/build/
+modules/*/build/
