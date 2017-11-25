@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/snluu/happydays#readme",
   "dependencies": {
+    "axios": "^0.17.1",
     "electron": "^1.7.9",
     "hellofromcpp": "file:./modules/hellofromcpp"
   },
