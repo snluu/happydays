@@ -1,24 +1,24 @@
 {
-  "name": "electron-with-native-template",
+  "name": "happydays",
   "version": "0.0.1",
-  "description": "A template for building Electron apps with native add-ons",
+  "description": "Happy days!",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "package-mac64": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=packaged",
-    "package-win64": "electron-packager . electron-with-native-template --overwrite --asar=true --platform=win32 --arch=x64 --icon=assets/icons/win/icon.ico --prune=true --out=packaged --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Election with Native Template\"",
-    "package-linux64": "electron-packager . electron-with-native-template --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=packaged"
+    "package-win64": "electron-packager . happydays --overwrite --asar=true --platform=win32 --arch=x64 --icon=assets/icons/win/icon.ico --prune=true --out=packaged --version-string.CompanyName=luu.io --version-string.FileDescription=luu.io --version-string.ProductName=\"Happy Days\"",
+    "package-linux64": "electron-packager . happydays --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=packaged"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/snluu/electron-with-native-template.git"
+    "url": "git+https://github.com/snluu/happydays.git"
   },
   "author": "Steven Luu",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/snluu/electron-with-native-template/issues"
+    "url": "https://github.com/snluu/happydays/issues"
   },
-  "homepage": "https://github.com/snluu/electron-with-native-template#readme",
+  "homepage": "https://github.com/snluu/happydays#readme",
   "dependencies": {
     "electron": "^1.7.9",
     "hellofromcpp": "file:./modules/hellofromcpp"
