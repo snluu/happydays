@@ -13,15 +13,17 @@
         font-size: x-small;
       }
       .forecast-icon {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
       }
     </style>
   </head>
   <body>
-    <h1>Happy Days</h1>
+      <nav class="navbar navbar-dark bg-dark">
+          <a class="navbar-brand" href="#">Happy Days</a>
+      </nav>
 
-    <table id="forecastView" class="table">
+    <table id="forecastView" class="table table-striped">
 
     </table>
 
@@ -116,7 +118,7 @@
           '<td colspan="2">&nbsp;<!--empty--></td>',
         );
         for (let iLoc = 0; iLoc < forecastLocations.length; iLoc++) {
-          html.push('<th class="forecast-ctr">', forecastLocations[iLoc], '</th>');
+          html.push('<th class="forecast-ctr" valign="middle">', forecastLocations[iLoc], '</th>');
         }
 
         html.push('</tr></thead>');
