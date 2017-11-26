@@ -1,22 +1,180 @@
 <html>
   <head>
-    <title>Home Page</title>
+    <title>Happy Days</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <style>
+      .forecast-ctr {
+        text-align: center;
+      }
+      .forecast-small {
+        font-size: small;
+      }
+
+      .forecast-xsmall {
+        font-size: x-small;
+      }
+    </style>
   </head>
   <body>
-    <h1>Welcome!</h1>
-    <h2 id="subtitle"></h2>
-    <div>
-      Checklist:
-      <ul>
-        <li>Update package.json</li>
-        <li>Update .npmrc to your desired Electron version</li>
-      </ul>
-    </div>
+    <h1>Happy Days</h1>
+
+    <table id="forecastView" class="table">
+
+    </table>
 
     <script>
-      let helloNative = require('hellofromcpp');
-      let h2 = document.querySelector('#subtitle');
-      h2.innerHTML = helloNative.hello();
+      const Axios = require('axios'); 
+      const Location = require('../modules/location');
+
+      const LOCATIONS = [
+        new Location('Deming, WA', 48.84, -122.16),
+        new Location('Ashford, WA', 46.76, -121.98),
+        new Location('Gold Bar, WA', 47.86, -121.69),
+        /*new Location('North Bend, WA', 47.50, -121.76),
+        new Location('La Push, WA', 47.93, -124.56),
+        new Location('Forks, WA', 47.94, -124.39),
+        new Location('Sandy, OR', 45.39, -122.26),
+        new Location('Government Camp, OR', 45.31, -121.91),
+        new Location('Pacific City, OR', 45.20, -123.95),*/
+      ];
+
+      let weatheForecastData = [];
+
+      function makeHourKey(forecast) {
+        let dt = new Date(forecast.fcst_valid_local);
+        return 'x' + dt.getFullYear() + dt.getMonth() + dt.getDate() + dt.getHours();
+      }
+
+      function processWeatherForecasts() {
+        let commonHrs = {};
+        // count common hours
+        for (let i = 0; i < weatheForecastData.length; i++) {
+          let forecasts = weatheForecastData[i].forecasts;
+          for (let hr = 0; hr < forecasts.length; hr++) {
+            let key = makeHourKey(forecasts[hr]);
+            commonHrs[key] = (commonHrs[key] || 0) + 1;
+          }
+        }
+
+        let days = [];
+        let forecastLocations = [];
+        let phrases = {}; // [day][hour][locationIndex] == phrase
+        let temperatures = {}; // [day][hour][locationIndex] = temp
+        let feelsLike = {}; // [day][hour][locationIndex] = temp
+        let iconCodes = {}; // [day][hour][locationIndex] = code
+        let hoursInDay = {}; // [day] = [hours]
+
+        for (let i = 0; i < weatheForecastData.length && i < LOCATIONS.length; i++) {
+          let forecasts = weatheForecastData[i].forecasts;
+          let loc = LOCATIONS[i];
+          forecastLocations.push(loc.name);
+
+          for (let hr = 0; hr < forecasts.length; hr++) {
+            let forecast = forecasts[hr];
+            let key = makeHourKey(forecast);
+            if (!commonHrs[key] || commonHrs[key] < weatheForecastData.length) {
+              continue;
+            }
+
+            let dt = new Date(forecast.fcst_valid_local);
+            let date = dt.toLocaleDateString();
+            let hour = dt.toLocaleTimeString();
+
+            phrases[date] = phrases[date] || {};
+            phrases[date][hour] = phrases[date][hour] || [];
+            phrases[date][hour].push(forecast.phrase_22char);
+
+            temperatures[date] = temperatures[date] || {};
+            temperatures[date][hour] = temperatures[date][hour] || [];
+            temperatures[date][hour].push(forecast.temp);
+
+            feelsLike[date] = feelsLike[date] || {};
+            feelsLike[date][hour] = feelsLike[date][hour] || [];
+            feelsLike[date][hour].push(forecast.feels_like);
+
+            if (!hoursInDay[date]) {
+              hoursInDay[date] = [];
+              days.push(date);
+            }
+
+            hoursInDay[date].push(hour);
+          }
+        }
+
+        let html = [];
+
+        html.push(
+          '<thead><tr>',
+          '<td colspan="2">&nbsp;<!--empty--></td>',
+        );
+        for (let iLoc = 0; iLoc < forecastLocations.length; iLoc++) {
+          html.push('<th class="forecast-ctr">', forecastLocations[iLoc], '</th>');
+        }
+
+        html.push('</tr></thead>');
+
+        html.push('<tbody>');
+        for (let iDay = 0; iDay < days.length; iDay++) {
+          let date = days[iDay];
+          html.push('<tr><td valign="top" rowspan="', hoursInDay[date].length, '">', date, '</td>');
+          for (let iHour = 0; iHour < hoursInDay[date].length; iHour++) {
+            let hour = hoursInDay[date][iHour];
+
+            if (iHour > 0) {
+              // not using the same row as the date
+              html.push('<tr>');
+            }
+
+            html.push('<td>', hour, '</td>');            
+            for (let iLoc = 0; iLoc < forecastLocations.length; iLoc++) {
+              html.push('<td class="forecast-ctr ">')
+              html.push('<div class="forecast-small">', phrases[date][hour][iLoc], '</div>');
+              html.push(
+                '<div class="forecast-xsmall">',
+                temperatures[date][hour][iLoc], ' &#8457/',
+                feelsLike[date][hour][iLoc], ' &#8457;',
+                '</div>');
+              html.push('</td>');
+              }
+
+            html.push('</tr>')
+          }
+        }
+
+        html.push('</tbody>');
+        let htmlStr = html.join('');
+        console.log(htmlStr);
+
+        const table = document.getElementById('forecastView');
+        table.innerHTML = htmlStr;
+      }
+
+      function load240hrWeather(locationIndex) {
+        const loc = LOCATIONS[locationIndex];
+        console.log(loc.name, '-- Loading 240hr weather');
+
+        const url =
+          'https://api.weather.com/v1/geocode/' +
+          loc.lat + '/' + loc.lon +
+          '/forecast/hourly/240hour.json?apiKey=6532d6454b8aa370768e63d6ba5a832e&units=e';
+
+        Axios.get(url)
+          .then(response => {
+            console.log(loc.name, '-- 240hr loaded');
+            
+            weatheForecastData.push(response.data);
+            processWeatherForecasts();
+
+            if (locationIndex < LOCATIONS.length - 1) {
+              setTimeout(() => load240hrWeather(locationIndex + 1), 500);
+            }
+          })
+          .catch(error => {
+            console.log(loc.name, '-- 240hr weather for failed:', error);
+          });
+      }
+
+      load240hrWeather(0);
     </script>
   </body>
 </html>
