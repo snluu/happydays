@@ -9,9 +9,12 @@
       .forecast-small {
         font-size: small;
       }
-
       .forecast-xsmall {
         font-size: x-small;
+      }
+      .forecast-icon {
+        width: 50px;
+        height: 50px;
       }
     </style>
   </head>
@@ -25,20 +28,19 @@
     <script>
       const Axios = require('axios'); 
       const Location = require('../modules/location');
-
       const LOCATIONS = [
-        new Location('Deming, WA', 48.84, -122.16),
-        new Location('Ashford, WA', 46.76, -121.98),
-        new Location('Gold Bar, WA', 47.86, -121.69),
-        /*new Location('North Bend, WA', 47.50, -121.76),
-        new Location('La Push, WA', 47.93, -124.56),
-        new Location('Forks, WA', 47.94, -124.39),
-        new Location('Sandy, OR', 45.39, -122.26),
-        new Location('Government Camp, OR', 45.31, -121.91),
-        new Location('Pacific City, OR', 45.20, -123.95),*/
+        new Location('Deming, WA', 48.83000183, -122.20999908),
+        new Location('Ashford, WA', 46.763149, -121.989616),
+        new Location('Gold Bar, WA', 47.86000061, -121.69999695),
+        new Location('North Bend, WA', 47.502934, -121.768562),
+        new Location('La Push, WA', 47.90999985, -124.63999939),
+        new Location('Forks, WA', 47.936375, -124.569603),
+        new Location('Sandy, OR', 45.40000153, -122.26000214),
+        new Location('Government Camp, OR', 45.318356, -121.911232),
+        new Location('Pacific City, OR', 45.207233, -123.958923),
       ];
 
-      let weatheForecastData = [];
+      let weatherForecastData = [];
 
       function makeHourKey(forecast) {
         let dt = new Date(forecast.fcst_valid_local);
@@ -48,8 +50,8 @@
       function processWeatherForecasts() {
         let commonHrs = {};
         // count common hours
-        for (let i = 0; i < weatheForecastData.length; i++) {
-          let forecasts = weatheForecastData[i].forecasts;
+        for (let i = 0; i < weatherForecastData.length; i++) {
+          let forecasts = weatherForecastData[i].forecasts;
           for (let hr = 0; hr < forecasts.length; hr++) {
             let key = makeHourKey(forecasts[hr]);
             commonHrs[key] = (commonHrs[key] || 0) + 1;
@@ -64,15 +66,15 @@
         let iconCodes = {}; // [day][hour][locationIndex] = code
         let hoursInDay = {}; // [day] = [hours]
 
-        for (let i = 0; i < weatheForecastData.length && i < LOCATIONS.length; i++) {
-          let forecasts = weatheForecastData[i].forecasts;
+        for (let i = 0; i < weatherForecastData.length && i < LOCATIONS.length; i++) {
+          let forecasts = weatherForecastData[i].forecasts;
           let loc = LOCATIONS[i];
           forecastLocations.push(loc.name);
 
           for (let hr = 0; hr < forecasts.length; hr++) {
             let forecast = forecasts[hr];
             let key = makeHourKey(forecast);
-            if (!commonHrs[key] || commonHrs[key] < weatheForecastData.length) {
+            if (!commonHrs[key] || commonHrs[key] < weatherForecastData.length) {
               continue;
             }
 
@@ -92,12 +94,18 @@
             feelsLike[date][hour] = feelsLike[date][hour] || [];
             feelsLike[date][hour].push(forecast.feels_like);
 
+            iconCodes[date] = iconCodes[date] || {};
+            iconCodes[date][hour] = iconCodes[date][hour] || [];
+            iconCodes[date][hour].push(forecast.icon_code);
+
             if (!hoursInDay[date]) {
               hoursInDay[date] = [];
               days.push(date);
             }
 
-            hoursInDay[date].push(hour);
+            if (i == 0) {
+              hoursInDay[date].push(hour);
+            }
           }
         }
 
@@ -127,7 +135,12 @@
 
             html.push('<td>', hour, '</td>');            
             for (let iLoc = 0; iLoc < forecastLocations.length; iLoc++) {
-              html.push('<td class="forecast-ctr ">')
+              html.push('<td class="forecast-ctr">')
+              html.push(
+                '<div><img class="forecast-icon" border="0" src="https://icons.wxug.com/i/c/v4/',
+                iconCodes[date][hour][iLoc],
+                '.svg" /></div>',
+              );
               html.push('<div class="forecast-small">', phrases[date][hour][iLoc], '</div>');
               html.push(
                 '<div class="forecast-xsmall">',
@@ -162,7 +175,7 @@
           .then(response => {
             console.log(loc.name, '-- 240hr loaded');
             
-            weatheForecastData.push(response.data);
+            weatherForecastData.push(response.data);
             processWeatherForecasts();
 
             if (locationIndex < LOCATIONS.length - 1) {
